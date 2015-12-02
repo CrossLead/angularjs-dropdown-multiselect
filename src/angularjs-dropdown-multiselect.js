@@ -57,7 +57,7 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
             },
             link: function ($scope, $element, $attrs, ngModelCtrl) {
                 var $dropdownTrigger = $element.children()[0];
-                
+
                 $scope.toggleDropdown = function () {
                     $scope.open = !$scope.open;
                 };
@@ -117,6 +117,34 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                     });
                 }
 
+                function deepEqual(x, y) {
+                  if ((typeof x == "object" && x != null) && (typeof y == "object" && y != null)) {
+                    if (Object.keys(x).length != Object.keys(y).length) return false;
+
+                    for (var prop in x) {
+                      if (y.hasOwnProperty(prop)) {
+                        if (!deepEqual(x[prop], y[prop])) return false;
+                      }
+                      else {
+                        return false;
+                      }
+                    }
+
+                    return true;
+                  }
+                  return x === y;
+                }
+
+                function findItem(arr, item, index) {
+                  for (var i = 0, l = arr.length; i < l; i++) {
+                    if (deepEqual(item, arr[i])) return (index ? i : arr[i]);
+                  }
+                }
+
+                function findIndex(arr, item) {
+                  return findItem(arr, item, true);
+                }
+
                 angular.extend($scope.settings, $scope.extraSettings || []);
                 angular.extend($scope.externalEvents, $scope.events || []);
                 angular.extend($scope.texts, $scope.translationTexts);
@@ -155,7 +183,7 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                         var parentFound = false;
 
                         while (angular.isDefined(target) && target !== null && !parentFound) {
-                            if (_.contains(target.className.split(' '), 'multiselect-parent') && !parentFound) {
+                            if (target.className.split(' ').indexOf('multiselect-parent') >= 0 && !parentFound) {
                                 if(target === $dropdownTrigger) {
                                     parentFound = true;
                                 }
@@ -180,7 +208,7 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                 };
 
                 $scope.getButtonText = function () {
-                    if ($scope.settings.dynamicTitle && (ngModelCtrl.$viewValue.length > 0 || (angular.isObject(ngModelCtrl.$viewValue) && _.keys(ngModelCtrl.$viewValue).length > 0))) {
+                    if ($scope.settings.dynamicTitle && (ngModelCtrl.$viewValue.length > 0 || (angular.isObject(ngModelCtrl.$viewValue) && Object.keys((ngModelCtrl && ngModelCtrl.$viewValue) || {}).length > 0))) {
                         if ($scope.settings.smartButtonMaxItems > 0) {
                             var itemsText = [];
 
@@ -259,7 +287,7 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                     var finalObj = null;
 
                     if ($scope.settings.externalIdProp === '') {
-                        finalObj = _.find($scope.options, findObj);
+                        finalObj = findItem($scope.options, findObj);
                     } else {
                         finalObj = findObj;
                     }
@@ -274,11 +302,11 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
 
                     dontRemove = dontRemove || false;
 
-                    var exists = _.findIndex(ngModelCtrl.$viewValue, findObj) !== -1;
+                    var exists = findIndex(ngModelCtrl.$viewValue, findObj) !== -1;
                     var copy = angular.copy(ngModelCtrl.$viewValue);
 
                     if (!dontRemove && exists) {
-                        copy.splice(_.findIndex(ngModelCtrl.$viewValue, findObj), 1);
+                        copy.splice(findIndex(ngModelCtrl.$viewValue, findObj), 1);
                         ngModelCtrl.$setViewValue(copy);
                         $scope.externalEvents.onItemDeselect(findObj);
                     } else if (!exists && ($scope.settings.selectionLimit === 0 || ngModelCtrl.$viewValue.length < $scope.settings.selectionLimit)) {
@@ -294,7 +322,7 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                         return ngModelCtrl.$viewValue !== null && angular.isDefined(ngModelCtrl.$viewValue[$scope.settings.idProp]) && ngModelCtrl.$viewValue[$scope.settings.idProp] === getFindObj(id)[$scope.settings.idProp];
                     }
 
-                    return _.findIndex(ngModelCtrl.$viewValue, getFindObj(id)) !== -1;
+                    return findIndex(ngModelCtrl.$viewValue, getFindObj(id)) !== -1;
                 };
 
                 $scope.externalEvents.onInitDone();
