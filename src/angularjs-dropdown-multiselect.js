@@ -142,7 +142,7 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                 }
 
                 function findIndex(arr, item) {
-                  return findItem(arr, item, true);
+                  return findItem(arr, item, true) || -1;
                 }
 
                 angular.extend($scope.settings, $scope.extraSettings || []);
