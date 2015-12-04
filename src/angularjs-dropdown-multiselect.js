@@ -117,12 +117,13 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                     });
                 }
 
-                function nKeys(x) { return ; }
-
                 function deepEqual(x, y) {
 
-                  if ((typeof x === "object" && x !== null) &&
-                      (typeof y === "object" && y !== null)) {
+                  if ((typeof x === 'object' && x !== null) &&
+                      (typeof y === 'object' && y !== null)) {
+
+                    // sparse array check
+                    if (x.length !== undefined && x.length !== y.length) return false;
 
                     if (Object.keys(x).length != Object.keys(y).length) return false;
 
