@@ -57,7 +57,7 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
             },
             link: function ($scope, $element, $attrs, ngModelCtrl) {
                 var $dropdownTrigger = $element.children()[0];
-                
+
                 $scope.toggleDropdown = function () {
                     $scope.open = !$scope.open;
                 };
@@ -73,7 +73,8 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                     onSelectAll: angular.noop,
                     onDeselectAll: angular.noop,
                     onInitDone: angular.noop,
-                    onMaxSelectionReached: angular.noop
+                    onMaxSelectionReached: angular.noop,
+                    onSearchFilterChanged: angular.noop
                 };
 
                 $scope.settings = {
@@ -108,6 +109,10 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                 };
 
                 $scope.searchFilter = $scope.searchFilter || '';
+
+                $scope.$watch('searchFilter', function(newValue) {
+                  $scope.externalEvents.onSearchFilterChanged(newValue);
+                });
 
                 if (angular.isDefined($scope.settings.groupBy)) {
                     $scope.$watch('options', function (newValue) {
