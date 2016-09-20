@@ -5,6 +5,30 @@ var directiveModule = angular.module('angularjs-dropdown-multiselect', []);
 directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$compile', '$parse',
     function ($filter, $document, $compile, $parse) {
 
+        function findIndex(arr, iteree) {
+          if (!arr ||
+              !angular.isArray(arr) ||
+              (iteree === undefined)) return -1;
+
+          var match;
+          if (angular.isFunction(iteree)) {
+            var match = iteree;
+          } else {
+            var match = angular.equals.bind(angular, iteree);
+          }
+
+          for (var i = 0, l = arr.length; i < l; i++) {
+            if (match(arr[i])) return i;
+          }
+
+          return -1;
+        }
+
+        function find(arr, iteree) {
+          var index = findIndex(arr, iteree);
+          if (index !== -1) return arr[index];
+        }
+
         return {
             restrict: 'AE',
             require: 'ngModel',
@@ -160,7 +184,7 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                         var parentFound = false;
 
                         while (angular.isDefined(target) && target !== null && !parentFound) {
-                            if (_.contains(target.className.split(' '), 'multiselect-parent') && !parentFound) {
+                            if (find(target.className.split(' '), 'multiselect-parent') && !parentFound) {
                                 if(target === $dropdownTrigger) {
                                     parentFound = true;
                                 }
@@ -185,7 +209,7 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                 };
 
                 $scope.getButtonText = function () {
-                    if ($scope.settings.dynamicTitle && (ngModelCtrl.$viewValue.length > 0 || (angular.isObject(ngModelCtrl.$viewValue) && _.keys(ngModelCtrl.$viewValue).length > 0))) {
+                    if ($scope.settings.dynamicTitle && (ngModelCtrl.$viewValue.length > 0 || (angular.isObject(ngModelCtrl.$viewValue) && Object.keys(ngModelCtrl.$viewValue).length > 0))) {
                         if ($scope.settings.smartButtonMaxItems > 0) {
                             var itemsText = [];
 
@@ -264,7 +288,7 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                     var finalObj = null;
 
                     if ($scope.settings.externalIdProp === '') {
-                        finalObj = _.find($scope.options, findObj);
+                        finalObj = find($scope.options, findObj);
                     } else {
                         finalObj = findObj;
                     }
@@ -279,11 +303,11 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
 
                     dontRemove = dontRemove || false;
 
-                    var exists = _.findIndex(ngModelCtrl.$viewValue, findObj) !== -1;
+                    var exists = !!find(ngModelCtrl.$viewValue, findObj);
                     var copy = angular.copy(ngModelCtrl.$viewValue);
 
                     if (!dontRemove && exists) {
-                        copy.splice(_.findIndex(ngModelCtrl.$viewValue, findObj), 1);
+                        copy.splice(findIndex(ngModelCtrl.$viewValue, findObj), 1);
                         ngModelCtrl.$setViewValue(copy);
                         $scope.externalEvents.onItemDeselect(findObj);
                     } else if (!exists && ($scope.settings.selectionLimit === 0 || ngModelCtrl.$viewValue.length < $scope.settings.selectionLimit)) {
@@ -299,7 +323,7 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                         return ngModelCtrl.$viewValue !== null && angular.isDefined(ngModelCtrl.$viewValue[$scope.settings.idProp]) && ngModelCtrl.$viewValue[$scope.settings.idProp] === getFindObj(id)[$scope.settings.idProp];
                     }
 
-                    return _.findIndex(ngModelCtrl.$viewValue, getFindObj(id)) !== -1;
+                    return findIndex(ngModelCtrl.$viewValue, getFindObj(id)) !== -1;
                 };
 
                 $scope.externalEvents.onInitDone();
