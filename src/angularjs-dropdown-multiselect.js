@@ -10,12 +10,9 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
               !angular.isArray(arr) ||
               (iteree === undefined)) return -1;
 
-          var match;
-          if (angular.isFunction(iteree)) {
-            var match = iteree;
-          } else {
-            var match = angular.equals.bind(angular, iteree);
-          }
+          var match = angular.isFunction(iteree)
+            ? iteree
+            : angular.equals.bind(angular, iteree);
 
           for (var i = 0, l = arr.length; i < l; i++) {
             if (match(arr[i])) return i;
