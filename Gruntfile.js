@@ -104,8 +104,8 @@ module.exports = function(grunt) {
 				}
 			}
 		});
-		
-		
+
+
 		/**
 		register/define grunt tasks
 		@toc 6.
@@ -113,7 +113,7 @@ module.exports = function(grunt) {
 		// Default task(s).
 		// grunt.registerTask('default', ['jshint:beforeconcat', 'less:development', 'concat:devJs', 'concat:devCss']);
 		grunt.registerTask('default', ['jshint:beforeconcatQ', 'uglify:build']);
-	
+
 	}
 	init({});		//initialize here for defaults (init may be called again later within a task)
 
