@@ -23,7 +23,7 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
 
                 var template = '<div class="multiselect-parent btn-group dropdown-multiselect">';
                 template += '<button type="button" class="dropdown-toggle" ng-class="settings.buttonClasses" ng-click="toggleDropdown()">{{getButtonText()}}&nbsp;<span class="caret"></span></button>';
-                template += '<ul class="dropdown-menu dropdown-menu-form" ng-style="{display: open ? \'block\' : \'none\', height : settings.scrollable ? settings.scrollableHeight : \'auto\' }" style="overflow: scroll" >';
+                template += '<ul class="dropdown-menu dropdown-menu-form" ng-style="{display: open ? \'block\' : \'none\', height : settings.scrollable ? settings.scrollableHeight : \'auto\' }" style="overflow: scroll;" >';
                 template += '<li ng-hide="!settings.showCheckAll || settings.selectionLimit > 0"><a data-ng-click="selectAll()"><span class="glyphicon glyphicon-ok"></span>  {{texts.checkAll}}</a>';
                 template += '<li ng-show="settings.showUncheckAll"><a data-ng-click="deselectAll();"><span class="glyphicon glyphicon-remove"></span>   {{texts.uncheckAll}}</a></li>';
                 template += '<li ng-hide="(!settings.showCheckAll || settings.selectionLimit > 0) && !settings.showUncheckAll" class="divider"></li>';
@@ -57,8 +57,12 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
             },
             link: function ($scope, $element, $attrs, ngModelCtrl) {
                 var $dropdownTrigger = $element.children()[0];
+                var dropdownMenu = $element.find('ul');
 
                 $scope.toggleDropdown = function () {
+                    if($scope.settings.appendToBody){
+                        adjustDropdownPosition();
+                    }
                     $scope.open = !$scope.open;
                 };
 
@@ -95,7 +99,8 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                     groupBy: $attrs.groupBy || undefined,
                     groupByTextProvider: null,
                     smartButtonMaxItems: 0,
-                    smartButtonTextConverter: angular.noop
+                    smartButtonTextConverter: angular.noop,
+                    appendToBody: false
                 };
 
                 $scope.texts = {
@@ -127,6 +132,27 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                 angular.extend($scope.texts, $scope.translationTexts);
 
                 $scope.singleSelection = $scope.settings.selectionLimit === 1;
+
+                if($scope.settings.appendToBody){
+                    angular.element('body').append(dropdownMenu);
+                    dropdownMenu.css('position', 'absolute');
+                }
+
+                function adjustDropdownPosition() {
+                    var offset = $element.offset();
+                    var buttonHeight = $element.height();
+                    var buttonWidth = $element.width();
+                    var menuWidth = dropdownMenu.width();
+                    var documentWidth = $document[0].documentElement.clientWidth;
+                    var left = offset.left;
+                    var right = left + menuWidth;
+                    if(right > documentWidth) {
+                        left = left - menuWidth + buttonWidth;
+                    }
+
+                    dropdownMenu.css('left', left+'px');
+                    dropdownMenu.css('top', (offset.top + buttonHeight) + 'px' );
+                }
 
                 function getFindObj(id) {
                     var findObj = {};
