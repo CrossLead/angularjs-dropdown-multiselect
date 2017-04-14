@@ -110,6 +110,7 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                     closeOnSelect: false,
                     buttonClasses: 'btn btn-default',
                     buttonSelectionsClasses: '',
+                    buttonIcon: null,
                     closeOnDeselect: false,
                     groupBy: $attrs.groupBy || undefined,
                     groupByTextProvider: null,
