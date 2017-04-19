@@ -74,6 +74,7 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                             $document.on('click', closeDropdown);
                         }
                     } else {
+                        $scope.externalEvents.closeDropdown();
                         if ($scope.settings.closeOnBlur) {
                             $document.off('click', closeDropdown);
                         }
@@ -92,7 +93,8 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                     onDeselectAll: angular.noop,
                     onInitDone: angular.noop,
                     onMaxSelectionReached: angular.noop,
-                    onSearchFilterChanged: angular.noop
+                    onSearchFilterChanged: angular.noop,
+                    closeDropdown: angular.noop
                 };
 
                 $scope.settings = {
@@ -210,6 +212,7 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                     if (!parentFound) {
                         $scope.$applyAsync(function () {
                             $scope.open = false;
+                            $scope.externalEvents.closeDropdown();
                             $document.off('click', closeDropdown);
                         });
                     }
