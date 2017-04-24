@@ -23,6 +23,6 @@
   },
   "repository": "",
   "engines": {
-    "node": "0.10.10"
+    "node": "6.9.1"
   }
 }
