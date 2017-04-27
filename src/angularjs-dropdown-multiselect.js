@@ -158,18 +158,31 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
 
                 function adjustDropdownPosition() {
                     var offset = $element.offset();
+
                     var buttonHeight = $element.height();
                     var buttonWidth = $element.width();
+
                     var menuWidth = dropdownMenu.width();
+                    var menuHeight = dropdownMenu.height();
+
                     var documentWidth = $document[0].documentElement.clientWidth;
+                    var documentHeight = $document[0].documentElement.clientHeight;
+
+                    var top = offset.top + buttonHeight;
+                    var bottom = top + menuHeight;
                     var left = offset.left;
                     var right = left + menuWidth;
+
                     if(right > documentWidth) {
                         left = left - menuWidth + buttonWidth;
                     }
 
-                    dropdownMenu.css('left', left+'px');
-                    dropdownMenu.css('top', (offset.top + buttonHeight) + 'px' );
+                    if(bottom > documentHeight) {
+                        top = offset.top - menuHeight - 12; //magic number since "top" is the middle of the button
+                    }
+
+                    dropdownMenu.css('left', left + 'px');
+                    dropdownMenu.css('top', top + 'px' );
                 }
 
                 function getFindObj(id) {
