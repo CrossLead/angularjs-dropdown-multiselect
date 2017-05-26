@@ -53,6 +53,8 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                 template += '<li class="divider" ng-show="settings.selectionLimit > 1"></li>';
                 template += '<li role="presentation" ng-show="settings.selectionLimit > 1"><a role="menuitem">{{selectedLength}} {{texts.selectionOf}} {{settings.selectionLimit}} {{texts.selectionCount}}</a></li>';
 
+                template += '<li ng-if="settings.loadMoreButton" style="text-align:center;"> <button type="button" class="btn btn-default" ng-click="externalEvents.loadMore()" style="width:90%;">Load More</button> </li>';
+
                 template += '</ul>';
                 template += '</div>';
 
@@ -94,7 +96,8 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                     onInitDone: angular.noop,
                     onMaxSelectionReached: angular.noop,
                     onSearchFilterChanged: angular.noop,
-                    closeDropdown: angular.noop
+                    closeDropdown: angular.noop,
+                    loadMore: angular.noop
                 };
 
                 $scope.settings = {
@@ -118,7 +121,8 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                     groupByTextProvider: null,
                     smartButtonMaxItems: 0,
                     smartButtonTextConverter: angular.noop,
-                    appendToBody: false
+                    appendToBody: false,
+                    loadMoreButton: false
                 };
 
                 $scope.texts = {
@@ -320,6 +324,14 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                         clearObjectViewValue();
                     } else {
                         ngModelCtrl.$setViewValue([]);
+                    }
+
+                    if($scope.settings.closeOnDeselect) {
+                        $scope.$applyAsync(function () {
+                            $scope.open = false;
+                            $scope.externalEvents.closeDropdown();
+                            $document.off('click', closeDropdown);
+                        });
                     }
                 };
 
