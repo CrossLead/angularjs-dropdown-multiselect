@@ -227,7 +227,7 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                     }
 
                     if (!parentFound) {
-                        $scope.$applyAsync(function () {
+                        $scope.$evalAsync(function () {
                             $scope.open = false;
                             $scope.externalEvents.closeDropdown();
                             $document.off('click', closeDropdown);
@@ -379,6 +379,12 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                 };
 
                 $scope.externalEvents.onInitDone();
+
+                $scope.$on('$destroy', function() {
+                    if($scope.settings.appendToBody) {
+                        angular.element('body').find('ul').remove();
+                    }
+                });
             }
         };
 }]);
