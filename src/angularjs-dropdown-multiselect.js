@@ -382,7 +382,7 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
 
                 $scope.$on('$destroy', function() {
                     if($scope.settings.appendToBody) {
-                        angular.element('body').find('ul').remove();
+                        angular.element('body').find('ul.dropdown-menu.dropdown-menu-form').remove();
                     }
                 });
             }
