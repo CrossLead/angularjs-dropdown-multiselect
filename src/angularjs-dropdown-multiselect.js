@@ -26,7 +26,7 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
                 template += '<span ng-if="!settings.buttonIcon">{{getButtonText()}}&nbsp;<span class="caret"></span></span>';
                 template += '<i ng-if="settings.buttonIcon" ng-class="settings.buttonIcon"></i>';
                 template += '</button>';
-                template += '<ul class="dropdown-menu dropdown-menu-form" ng-style="{display: open ? \'block\' : \'none\', height : settings.scrollable ? settings.scrollableHeight : \'auto\' }" style="overflow: scroll;" >';
+                template += '<ul id="ul-{{ ::$id }}" class="dropdown-menu dropdown-menu-form" ng-style="{display: open ? \'block\' : \'none\', height : settings.scrollable ? settings.scrollableHeight : \'auto\' }" style="overflow: scroll;" >';
                 template += '<li ng-hide="!settings.showCheckAll || settings.selectionLimit > 0"><a data-ng-click="selectAll()" style="cursor: pointer;"><span class="glyphicon glyphicon-ok"></span>  {{texts.checkAll}}</a>';
                 template += '<li ng-show="settings.showUncheckAll"><a data-ng-click="deselectAll();" style="cursor: pointer;"><span class="glyphicon glyphicon-remove"></span>   {{texts.uncheckAll}}</a></li>';
                 template += '<li ng-hide="(!settings.showCheckAll || settings.selectionLimit > 0) && !settings.showUncheckAll" class="divider"></li>';
@@ -382,7 +382,7 @@ directiveModule.directive('ngDropdownMultiselect', ['$filter', '$document', '$co
 
                 $scope.$on('$destroy', function() {
                     if($scope.settings.appendToBody) {
-                        angular.element('body').find('ul.dropdown-menu.dropdown-menu-form').remove();
+                        angular.element('body').find('#ul-' + $scope.$id).remove();
                     }
                 });
             }
